@@ -32,8 +32,6 @@ jobs:
           # inject the same proxy envs (this mirrors the customer's job)
           HTTP_PROXY: http://host.docker.internal:8888
           HTTPS_PROXY: http://host.docker.internal:8888
-          http_proxy: http://host.docker.internal:8888
-          https_proxy: http://host.docker.internal:8888
 
       - name: Echo result
         run: |
