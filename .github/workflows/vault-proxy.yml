@@ -1,9 +1,19 @@
+name: test-vault-proxy
+
+on:
+  workflow_dispatch:   # trigger manually from Actions tab
+
 jobs:
-  vault-test:
+  proxy-test:
     runs-on: self-hosted
+
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
       - name: Curl through proxy (sanity)
         run: |
+          echo "Testing Vault health via curl + proxy"
           curl -v --proxy http://host.docker.internal:8888 $VAULT_ADDR/v1/sys/health
         env:
           VAULT_ADDR: http://host.docker.internal:8200
@@ -21,3 +31,9 @@ jobs:
         env:
           HTTP_PROXY: http://host.docker.internal:8888
           HTTPS_PROXY: http://host.docker.internal:8888
+
+      - name: Show value from vault-action
+        run: |
+          echo "Secret DEMO_FOO is $DEMO_FOO"
+        env:
+          DEMO_FOO: ${{ env.DEMO_FOO }}
