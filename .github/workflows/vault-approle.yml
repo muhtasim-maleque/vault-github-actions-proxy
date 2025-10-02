@@ -1,0 +1,25 @@
+name: Vault Test (AppRole)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-vault:
+    runs-on: self-hosted
+    steps:
+      - name: Test with curl (just sanity check)
+        run: |
+          curl -s ${{ secrets.VAULT_ADDR }}/v1/sys/health | jq
+
+      - name: Vault login with approle (via action)
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            kv/data/demo foo | DEMO_FOO
+
+      - name: Show value from vault-action
+        run: echo "Secret DEMO_FOO is $DEMO_FOO"
