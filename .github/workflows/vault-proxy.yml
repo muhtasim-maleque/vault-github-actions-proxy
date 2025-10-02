@@ -1,22 +1,22 @@
 name: test-vault-proxy
-
 on:
-  workflow_dispatch:   # trigger manually from Actions tab
+  workflow_dispatch:
 
 jobs:
   proxy-test:
-    runs-on: self-hosted
-
+    runs-on: self-hosted   # target your proxy runner via label if needed
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Curl through proxy (sanity)
+      - name: Curl via proxy (sanity)
         run: |
-          echo "Testing Vault health via curl + proxy"
-          curl -v --proxy http://host.docker.internal:8888 $VAULT_ADDR/v1/sys/health
+          echo "=== CURL START ==="
+          # force IPv4 to avoid host.docker.internal IPv6 issues
+          curl -4 -v --proxy http://host.docker.internal:8888 "$VAULT_HOST/v1/sys/health" || true
+          echo "=== CURL END ==="
         env:
-          VAULT_ADDR: http://host.docker.internal:8200
+          VAULT_HOST: http://host.docker.internal:8200
           HTTP_PROXY: http://host.docker.internal:8888
           HTTPS_PROXY: http://host.docker.internal:8888
 
@@ -29,11 +29,12 @@ jobs:
           secretId: ${{ secrets.VAULT_SECRET_ID }}
           secrets: kv/data/demo FOO | DEMO_FOO
         env:
+          # inject the same proxy envs (this mirrors the customer's job)
           HTTP_PROXY: http://host.docker.internal:8888
           HTTPS_PROXY: http://host.docker.internal:8888
+          http_proxy: http://host.docker.internal:8888
+          https_proxy: http://host.docker.internal:8888
 
-      - name: Show value from vault-action
+      - name: Echo result
         run: |
-          echo "Secret DEMO_FOO is $DEMO_FOO"
-        env:
-          DEMO_FOO: ${{ env.DEMO_FOO }}
+          echo "DEMO_FOO='$DEMO_FOO'"
