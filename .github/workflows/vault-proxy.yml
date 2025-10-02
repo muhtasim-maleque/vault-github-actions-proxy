@@ -1,0 +1,23 @@
+jobs:
+  vault-test:
+    runs-on: self-hosted
+    steps:
+      - name: Curl through proxy (sanity)
+        run: |
+          curl -v --proxy http://host.docker.internal:8888 $VAULT_ADDR/v1/sys/health
+        env:
+          VAULT_ADDR: http://host.docker.internal:8200
+          HTTP_PROXY: http://host.docker.internal:8888
+          HTTPS_PROXY: http://host.docker.internal:8888
+
+      - name: Vault Action with proxy
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: kv/data/demo FOO | DEMO_FOO
+        env:
+          HTTP_PROXY: http://host.docker.internal:8888
+          HTTPS_PROXY: http://host.docker.internal:8888
