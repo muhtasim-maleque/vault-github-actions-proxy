@@ -1,0 +1,21 @@
+name: Vault Action Local Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  vault-test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch secret from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: http://host.docker.internal:8200
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/hello foo | HELLO_SECRET
