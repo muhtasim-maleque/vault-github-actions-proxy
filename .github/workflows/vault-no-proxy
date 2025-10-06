@@ -1,0 +1,28 @@
+name: no-proxy-test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  proxy-bypass-test:
+    runs-on: self-hosted
+    env:
+      HTTP_PROXY: http://host.docker.internal:8888
+      HTTPS_PROXY: http://host.docker.internal:8888
+      NO_PROXY: 127.0.0.1,localhost,host.docker.internal
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Curl (should bypass proxy)
+        run: |
+          curl -v http://host.docker.internal:8200/v1/sys/health || true
+      - name: Vault Action (bypass proxy)
+        uses: hashicorp/vault-action@v3
+        with:
+          url: http://host.docker.internal:8200
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            kv/data/demo foo | HELLO_SECRET
