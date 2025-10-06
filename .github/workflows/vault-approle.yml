@@ -1,4 +1,4 @@
-name: Vault Test (AppRole)
+name: basic-approle-test
 
 on:
   workflow_dispatch:
