@@ -1,0 +1,36 @@
+name: test-vault-proxy-v2
+on:
+  workflow_dispatch:
+
+jobs:
+  proxy-test:
+    runs-on: self-hosted
+
+    env:
+      HTTP_PROXY: http://host.docker.internal:8888
+      HTTPS_PROXY: http://host.docker.internal:8888
+      NO_PROXY: 127.0.0.1,localhost,host.docker.internal
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sanity check with curl through proxy
+        run: |
+          echo "Testing Vault health via proxy..."
+          curl -4 -v --proxy "$HTTP_PROXY" "$VAULT_HOST/v1/sys/health" || true
+        env:
+          VAULT_HOST: http://host.docker.internal:8200
+
+      - name: Vault login with AppRole through proxy
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: kv/data/demo FOO | DEMO_FOO
+
+      - name: Echo result
+        run: |
+          echo "Secret DEMO_FOO is $DEMO_FOO"
