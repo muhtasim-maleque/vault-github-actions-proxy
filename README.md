@@ -33,6 +33,16 @@ Inside the container run the config (use a fresh token from your Github Repo Set
 ./run.sh
 ```
 
+### 3b) Add repository secrets (Vault AppRole + address)
+
+Before running the workflows, add the Vault connection and AppRole credentials as **Actions secrets**:
+
+**Repo UI:** `Settings` → `Secrets and variables` → `Actions` → `New repository secret`
+
+- `VAULT_ADDR` = `<your VAULT address>`  
+- `VAULT_ROLE_ID` = `<your Approle role_id>`  
+- `VAULT_SECRET_ID` = `<your Approle secret_id>`
+
 ## 4a) Run Basic Approle workflow (just for sanity check, skip steps 2 & 3 if doing this)
 ```text
 Actions → basic-approle-test → Run workflow
