@@ -18,4 +18,4 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
           secrets: |
-            secret/hello foo | HELLO_SECRET
+            kv/data/demo foo | HELLO_SECRET
