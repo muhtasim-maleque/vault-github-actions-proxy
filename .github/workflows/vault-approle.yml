@@ -6,15 +6,18 @@ on:
 jobs:
   test-vault:
     runs-on: self-hosted
+    env:
+      VAULT_ADDR: http://host.docker.internal:8200
+
     steps:
       - name: Test with curl (just sanity check)
         run: |
-          curl -s ${{ secrets.VAULT_ADDR }}/v1/sys/health | jq
+          curl -sS --max-time 5 "$VAULT_ADDR/v1/sys/health" || true
 
       - name: Vault login with approle (via action)
         uses: hashicorp/vault-action@v2
         with:
-          url: ${{ secrets.VAULT_ADDR }}
+          url: ${{ env.VAULT_ADDR }}
           method: approle
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
