@@ -18,7 +18,7 @@ export HTTPS_PROXY=http://127.0.0.1:8888
 curl -v --proxy http://127.0.0.1:8888 http://127.0.0.1:8200/v1/sys/health
 ```
 
-## 3) Start a Docker-based self-hosted GitHub runner
+## 3a) Start a Docker-based self-hosted GitHub runner
 ```bash
 docker pull ghcr.io/actions/actions-runner:latest
 # start interactive container (will drop you into container shell)
@@ -33,7 +33,7 @@ Inside the container run the config (use a fresh token from your Github Repo Set
 ./run.sh
 ```
 
-### 3b) Add repository secrets (Vault AppRole + address)
+## 3b) Add repository secrets (Vault AppRole + address)
 
 Before running the workflows, add the Vault connection and AppRole credentials as **Actions secrets**:
 
@@ -43,7 +43,7 @@ Before running the workflows, add the Vault connection and AppRole credentials a
 - `VAULT_ROLE_ID` = `<your Approle role_id>`  
 - `VAULT_SECRET_ID` = `<your Approle secret_id>`
 
-## 4a) Run Basic Approle workflow (just for sanity check, skip steps 2 & 3 if doing this)
+## 4a) Run Basic Approle workflow (just for sanity check, skip step 2 if doing this)
 ```text
 Actions → basic-approle-test → Run workflow
 ```
